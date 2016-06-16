@@ -1,0 +1,15 @@
+{
+  "name": "mkc-plone-post",
+  "version": "1.0.0",
+  "description": "",
+  "bin": "bin/mkc-plone-post.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "dependencies": {
+    "gfm-hljs-fm": "git+https://github.com/mabhub/gfm-hljs-fm.git",
+    "prompt": "^1.0.0",
+    "request": "^2.72.0"
+  }
+}
