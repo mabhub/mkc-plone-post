@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const path    = require('path');
 const fs      = require('fs');
 const request = require('request');
 const prompt  = require('prompt');
@@ -8,11 +9,22 @@ const render  = require('gfm-hljs-fm');
 
 if (process.argv[2] && fs.existsSync(process.argv[2])) {
 
-    let sourcefile, fileContent, postpath, meta;
+    let sourcetype, sourcefile, fileContent, postpath, meta;
 
+    sourcetype  = path.extname(process.argv[2]);
     sourcefile  = fs.readFileSync(process.argv[2]).toString();
-    fileContent = render(sourcefile);
-    meta        = render(sourcefile, {style: 'js'});
+
+    switch (sourcetype) {
+        case '.html':
+            filecontent = sourcefile;
+            meta        = {attributes:{}};
+            break;
+        case '.md':
+        default:
+            fileContent = render(sourcefile);
+            meta        = render(sourcefile, {style: 'js'});
+            break;
+    }
 
     prompt.start();
 
