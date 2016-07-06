@@ -5,9 +5,10 @@ const request = require('request');
 const prompt  = require('prompt');
 const render  = require('gfm-hljs-fm');
 
-var sourcefile, fileContent, postpath, meta;
 
 if (process.argv[2] && fs.existsSync(process.argv[2])) {
+
+    let sourcefile, fileContent, postpath, meta;
 
     sourcefile  = fs.readFileSync(process.argv[2]).toString();
     fileContent = render(sourcefile);
