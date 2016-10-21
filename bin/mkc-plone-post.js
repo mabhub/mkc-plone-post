@@ -16,7 +16,7 @@ if (process.argv[2] && fs.existsSync(process.argv[2])) {
 
     switch (sourcetype) {
         case '.html':
-            filecontent = sourcefile;
+            fileContent = sourcefile;
             meta        = {attributes:{}};
             break;
         case '.md':
