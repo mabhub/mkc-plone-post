@@ -8,6 +8,7 @@
   },
   "author": "",
   "dependencies": {
+    "dotenv": "~8.2.0",
     "form-data": "~3.0.0",
     "gfm-hljs-fm": "git+https://github.com/mabhub/gfm-hljs-fm.git",
     "node-fetch": "~2.6.0",

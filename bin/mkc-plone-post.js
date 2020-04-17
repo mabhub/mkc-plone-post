@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+require('dotenv').config();
 const FormData = require('form-data');
 const path = require('path');
 const fs = require('fs');
@@ -28,20 +29,25 @@ if (process.argv[2] && fs.existsSync(process.argv[2])) {
 
   prompt.start();
 
-  const properties = {
-    tri: {
+  const properties = {};
+
+  if (!process.env.USER) {
+    properties.tri = {
       description: 'Utilisateur',
       message: 'Ce champs est requis',
       required: true,
-    },
-    passwd: {
+    };
+  }
+
+  if (!process.env.PASS) {
+    properties.passwd= {
       description: 'Mot de passe (non stocké)',
       message: 'Ce champs est requis',
       replace: '*',
       required: true,
       hidden: true,
-    },
-  };
+    };
+  }
 
   if (!meta.attributes.url) {
     properties.postpath = {
@@ -57,7 +63,10 @@ if (process.argv[2] && fs.existsSync(process.argv[2])) {
     const body = new FormData();
     body.append('text', fileContent);
 
-    const auth = Buffer.from(`${result.tri}:${result.passwd}`).toString('base64');
+    const user = result.tri || process.env.USER;
+    const pass = result.passwd || process.env.PASS;
+
+    const auth = Buffer.from(`${user}:${pass}`).toString('base64');
     const headers = {
       Authorization: `Basic ${auth}`,
     };
@@ -70,6 +79,6 @@ if (process.argv[2] && fs.existsSync(process.argv[2])) {
     });
 
     // eslint-disable-next-line no-console
-    console.log(await response.json());
+    console.log(await response.text());
   });
 }
