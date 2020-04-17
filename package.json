@@ -12,7 +12,13 @@
     "form-data": "~3.0.0",
     "gfm-hljs-fm": "git+https://github.com/mabhub/gfm-hljs-fm.git",
     "node-fetch": "~2.6.0",
-    "prompt": "^1.0.0"
+    "prompt": "^1.0.0",
+    "remark": "~12.0.0",
+    "remark-extract-frontmatter": "~2.0.2",
+    "remark-footnotes": "~1.0.0",
+    "remark-frontmatter": "~2.0.0",
+    "remark-html": "~11.0.1",
+    "yaml": "~1.9.0"
   },
   "devDependencies": {
     "eslint": "~6.8.0",

@@ -6,79 +6,90 @@ const path = require('path');
 const fs = require('fs');
 const fetch = require('node-fetch');
 const prompt = require('prompt');
-const render = require('gfm-hljs-fm');
 
-if (process.argv[2] && fs.existsSync(process.argv[2])) {
-  let fileContent;
-  let meta;
+const { render } = require('../lib/render-md.js');
 
-  const sourcetype = path.extname(process.argv[2]);
-  const sourcefile = fs.readFileSync(process.argv[2]).toString();
+const doPublish = process.argv.includes('--publish');
 
-  switch (sourcetype) {
-    case '.html':
-      fileContent = sourcefile;
-      meta = { attributes: {} };
-      break;
-    case '.md':
-    default:
-      fileContent = render(sourcefile);
-      meta = render(sourcefile, { style: 'js' });
-      break;
-  }
+(async () => {
+  if (process.argv[2] && fs.existsSync(process.argv[2])) {
+    let frontmatter;
+    let htmlSource;
 
-  prompt.start();
+    const sourcetype = path.extname(process.argv[2]);
+    const sourcefile = fs.readFileSync(process.argv[2]).toString();
 
-  const properties = {};
+    switch (sourcetype) {
+      case '.html':
+        htmlSource = sourcefile;
+        frontmatter = {};
+        break;
+      case '.md':
+      default: {
+        const rendered = await render(sourcefile);
+        frontmatter = rendered.frontmatter;
+        htmlSource = rendered.html;
+      }
+    }
 
-  if (!process.env.USER) {
-    properties.tri = {
-      description: 'Utilisateur',
-      message: 'Ce champs est requis',
-      required: true,
-    };
-  }
+    prompt.start();
 
-  if (!process.env.PASS) {
-    properties.passwd= {
-      description: 'Mot de passe (non stocké)',
-      message: 'Ce champs est requis',
-      replace: '*',
-      required: true,
-      hidden: true,
-    };
-  }
+    const properties = {};
 
-  if (!meta.attributes.url) {
-    properties.postpath = {
-      description: 'Chemin complet du end-point de l\'article',
-      message: 'Ce champs est requis',
-      required: true,
-    };
-  }
+    if (!process.env.USER) {
+      properties.tri = {
+        description: 'Utilisateur',
+        message: 'Ce champs est requis',
+        required: true,
+      };
+    }
 
-  prompt.get({ properties }, async (err, result) => {
-    if (err) throw err;
+    if (!process.env.PASS) {
+      properties.passwd = {
+        description: 'Mot de passe (non stocké)',
+        message: 'Ce champs est requis',
+        replace: '*',
+        required: true,
+        hidden: true,
+      };
+    }
 
-    const body = new FormData();
-    body.append('text', fileContent);
+    if (!frontmatter.url) {
+      properties.postpath = {
+        description: 'Chemin complet du end-point de l\'article',
+        message: 'Ce champs est requis',
+        required: true,
+      };
+    }
 
-    const user = result.tri || process.env.USER;
-    const pass = result.passwd || process.env.PASS;
+    prompt.get({ properties }, async (err, result) => {
+      if (err) throw err;
 
-    const auth = Buffer.from(`${user}:${pass}`).toString('base64');
-    const headers = {
-      Authorization: `Basic ${auth}`,
-    };
+      const body = new FormData();
+      body.append('text', htmlSource);
 
-    const postPath = meta.attributes.url || result.postpath;
-    const response = await fetch(`https://edit.makina-corpus.com${postPath}/update-content`, {
-      method: 'POST',
-      headers,
-      body,
+      const user = result.tri || process.env.USER;
+      const pass = result.passwd || process.env.PASS;
+
+      const auth = Buffer.from(`${user}:${pass}`).toString('base64');
+      const headers = {
+        Authorization: `Basic ${auth}`,
+      };
+
+      const postPath = frontmatter.url || result.postpath;
+
+      if (doPublish) {
+        const response = await fetch(`https://edit.makina-corpus.com${postPath}/update-content`, {
+          method: 'POST',
+          headers,
+          body,
+        });
+        // eslint-disable-next-line no-console
+        console.log(await response.text());
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(htmlSource);
+      }
     });
-
-    // eslint-disable-next-line no-console
-    console.log(await response.text());
-  });
-}
+  }
+})();
