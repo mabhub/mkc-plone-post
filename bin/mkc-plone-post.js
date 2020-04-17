@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
+const FormData = require('form-data');
 const path = require('path');
 const fs = require('fs');
-const request = require('request');
+const fetch = require('node-fetch');
 const prompt = require('prompt');
 const render = require('gfm-hljs-fm');
-
 
 if (process.argv[2] && fs.existsSync(process.argv[2])) {
   let fileContent;
@@ -51,23 +51,25 @@ if (process.argv[2] && fs.existsSync(process.argv[2])) {
     };
   }
 
-  prompt.get({
-    properties,
-  }, (err, result) => {
+  prompt.get({ properties }, async (err, result) => {
     if (err) throw err;
-    request.post(`https://edit.makina-corpus.com${meta.attributes.url || result.postpath}/update-content`, {
-      auth: {
-        user: result.tri,
-        pass: result.passwd,
-        sendImmediately: false,
-      },
-      form: {
-        text: fileContent,
-      },
-    }, (err2, httpResponse, body) => {
-      if (err2) throw err;
-      // eslint-disable-next-line no-console
-      console.log(body);
+
+    const body = new FormData();
+    body.append('text', fileContent);
+
+    const auth = Buffer.from(`${result.tri}:${result.passwd}`).toString('base64');
+    const headers = {
+      Authorization: `Basic ${auth}`,
+    };
+
+    const postPath = meta.attributes.url || result.postpath;
+    const response = await fetch(`https://edit.makina-corpus.com${postPath}/update-content`, {
+      method: 'POST',
+      headers,
+      body,
     });
+
+    // eslint-disable-next-line no-console
+    console.log(await response.json());
   });
 }
