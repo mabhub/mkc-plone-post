@@ -4,7 +4,8 @@
   "description": "",
   "bin": "bin/mkc-plone-post.js",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "version": "git changelog -n -t $npm_package_version && git add CHANGELOG.md"
   },
   "author": "",
   "dependencies": {
