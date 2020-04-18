@@ -1,8 +1,8 @@
 {
-  "name": "mkc-plone-post",
+  "name": "push-md",
   "version": "0.2.0",
   "description": "Pousse le contenu d'un article (existant) vers une API Plone",
-  "bin": "bin/mkc-plone-post.js",
+  "bin": "bin/push-md.js",
   "scripts": {
     "lint": "eslint .",
     "version": "git changelog -n -t $npm_package_version && git add CHANGELOG.md"
@@ -14,10 +14,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/makinacorpus/mkc-plone-post"
+    "url": "https://github.com/makinacorpus/push-md"
   },
   "bugs": {
-    "url": "https://github.com/makinacorpus/mkc-plone-post/issues"
+    "url": "https://github.com/makinacorpus/push-md/issues"
   },
   "dependencies": {
     "dotenv": "~8.2.0",
