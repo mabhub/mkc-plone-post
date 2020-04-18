@@ -10,7 +10,6 @@
   "dependencies": {
     "dotenv": "~8.2.0",
     "form-data": "~3.0.0",
-    "gfm-hljs-fm": "git+https://github.com/mabhub/gfm-hljs-fm.git",
     "node-fetch": "~2.6.0",
     "prompt": "^1.0.0",
     "remark": "~12.0.0",
@@ -19,7 +18,7 @@
     "remark-frontmatter": "~2.0.0",
     "remark-highlight.js": "~6.0.0",
     "remark-html": "~11.0.1",
-    "yaml": "~1.9.0"
+    "yaml": "~1.9.1"
   },
   "devDependencies": {
     "eslint": "~6.8.0",
