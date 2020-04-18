@@ -3,16 +3,20 @@
 require('dotenv').config();
 const FormData = require('form-data');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs').promises;
 const fetch = require('node-fetch');
-const prompt = require('prompt');
 const yargs = require('yargs');
+const inquirer = require('inquirer');
+
+const { render } = require('../lib/render-md.js');
 
 yargs
   .scriptName(require('../package.json').name)
   .boolean('publish')
   .alias('help', 'h')
   .alias('publish', 'p');
+
+const ALLOWED_TYPES = ['.html', '.md'];
 
 const {
   argv: {
@@ -21,87 +25,98 @@ const {
   },
 } = yargs;
 
-const { render } = require('../lib/render-md.js');
-
 (async () => {
-  if (fileName && fs.existsSync(fileName)) {
-    let frontmatter;
-    let htmlSource;
+  if (!fileName) {
+    process.exit(1);
+  }
 
-    const sourcetype = path.extname(fileName);
-    const sourcefile = fs.readFileSync(fileName).toString();
+  try {
+    await fs.access(fileName);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    process.exit(1);
+  }
 
-    switch (sourcetype) {
-      case '.html':
-        htmlSource = sourcefile;
-        frontmatter = {};
-        break;
-      case '.md':
-      default: {
-        const rendered = await render(sourcefile);
-        frontmatter = rendered.frontmatter;
-        htmlSource = rendered.html;
-      }
+  const sourceFile = await fs.readFile(fileName);
+  const sourceType = path.extname(fileName);
+
+  if (!ALLOWED_TYPES.includes(sourceType.toLowerCase())) {
+    // eslint-disable-next-line no-console
+    console.error('Type de fichier invalide');
+    process.exit(1);
+  }
+
+  const sourceText = sourceFile.toString();
+  if (!sourceText) {
+    process.exit(1);
+  }
+
+  let frontmatter;
+  let htmlSource;
+
+  switch (sourceType) {
+    case '.html':
+      htmlSource = sourceText;
+      frontmatter = {};
+      break;
+    case '.md':
+    default: {
+      const rendered = await render(sourceText);
+      frontmatter = rendered.frontmatter;
+      htmlSource = rendered.html;
     }
+  }
 
-    prompt.start();
+  const required = value => !!value || 'Ce champs ne peut être vide';
 
-    const properties = {};
+  const result = await inquirer.prompt([
+    {
+      name: 'tri',
+      message: 'Utilisateur',
+      default: process.env.USER,
+      when: !process.env.PASS || !process.env.USER,
+      validate: required,
+    },
+    {
+      name: 'passwd',
+      type: 'password',
+      message: 'Mot de passe (non stocké)',
+      when: !process.env.PASS,
+      validate: required,
+    },
+    {
+      name: 'postpath',
+      message: 'Chemin complet du end-point de l\'article',
+      default: frontmatter.url,
+      when: !frontmatter.url,
+      validate: required,
+    },
+  ]);
 
-    if (!process.env.USER) {
-      properties.tri = {
-        description: 'Utilisateur',
-        message: 'Ce champs est requis',
-        required: true,
-      };
-    }
+  const body = new FormData();
+  body.append('text', htmlSource);
 
-    if (!process.env.PASS) {
-      properties.passwd = {
-        description: 'Mot de passe (non stocké)',
-        message: 'Ce champs est requis',
-        replace: '*',
-        required: true,
-        hidden: true,
-      };
-    }
+  const user = result.tri || process.env.USER;
+  const pass = result.passwd || process.env.PASS;
 
-    if (!frontmatter.url) {
-      properties.postpath = {
-        description: 'Chemin complet du end-point de l\'article',
-        message: 'Ce champs est requis',
-        required: true,
-      };
-    }
+  const auth = Buffer.from(`${user}:${pass}`).toString('base64');
+  const headers = {
+    Authorization: `Basic ${auth}`,
+  };
 
-    prompt.get({ properties }, async (err, result) => {
-      if (err) throw err;
+  const postPath = frontmatter.url || result.postpath;
 
-      const body = new FormData();
-      body.append('text', htmlSource);
-
-      const user = result.tri || process.env.USER;
-      const pass = result.passwd || process.env.PASS;
-
-      const auth = Buffer.from(`${user}:${pass}`).toString('base64');
-      const headers = {
-        Authorization: `Basic ${auth}`,
-      };
-
-      const postPath = frontmatter.url || result.postpath;
-
-      if (publish) {
-        const response = await fetch(`https://edit.makina-corpus.com${postPath}/update-content`, {
-          method: 'POST',
-          headers,
-          body,
-        });
-        // eslint-disable-next-line no-console
-        console.log(await response.text());
-      } else {
-        // eslint-disable-next-line no-console
-        console.log(htmlSource);
-      }
+  if (publish) {
+    const response = await fetch(`https://edit.makina-corpus.com${postPath}/update-content`, {
+      method: 'POST',
+      headers,
+      body,
     });
+    // eslint-disable-next-line no-console
+    console.log(await response.text());
+  } else {
+    // eslint-disable-next-line no-console
+    console.log(htmlSource);
   }
 })();
