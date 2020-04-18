@@ -10,6 +10,9 @@ const inquirer = require('inquirer');
 
 const { render } = require('../lib/render-md.js');
 
+inquirer
+  .registerPrompt('file-tree-selection', require('inquirer-file-tree-selection-prompt'));
+
 yargs
   .scriptName(require('../package.json').name)
   .boolean('publish')
@@ -21,13 +24,22 @@ const ALLOWED_TYPES = ['.html', '.md'];
 const {
   argv: {
     publish,
-    _: [fileName],
+    _,
   },
 } = yargs;
 
 (async () => {
+  let [fileName] = _;
+
   if (!fileName) {
-    process.exit(1);
+    const response = await inquirer.prompt({
+      name: 'file',
+      type: 'file-tree-selection',
+      root: process.cwd(),
+      onlyShowValid: true,
+      validate: value => ALLOWED_TYPES.includes(path.extname(value).toLowerCase()),
+    });
+    fileName = response.file;
   }
 
   try {

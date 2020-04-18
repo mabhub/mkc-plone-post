@@ -23,6 +23,7 @@
     "dotenv": "~8.2.0",
     "form-data": "~3.0.0",
     "inquirer": "~7.1.0",
+    "inquirer-file-tree-selection-prompt": "~1.0.5",
     "node-fetch": "~2.6.0",
     "remark": "~12.0.0",
     "remark-extract-frontmatter": "~2.0.2",
