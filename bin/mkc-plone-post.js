@@ -15,9 +15,16 @@ inquirer
 
 yargs
   .scriptName(require('../package.json').name)
-  .boolean('publish')
+  .usage('$0 [--publish] [<fichier>]')
   .alias('help', 'h')
-  .alias('publish', 'p');
+  .options({
+    publish: {
+      alias: 'p',
+      describe: 'Publie l\'article',
+      default: false,
+      type: 'boolean',
+    },
+  });
 
 const ALLOWED_TYPES = ['.html', '.md'];
 
