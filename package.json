@@ -1,13 +1,24 @@
 {
   "name": "mkc-plone-post",
   "version": "0.2.0",
-  "description": "",
+  "description": "Pousse le contenu d'un article (existant) vers une API Plone",
   "bin": "bin/mkc-plone-post.js",
   "scripts": {
     "lint": "eslint .",
     "version": "git changelog -n -t $npm_package_version && git add CHANGELOG.md"
   },
-  "author": "",
+  "author": {
+    "name": "Benjamin Marguin",
+    "email": "benjamin.marguin@makina-corpus.com",
+    "url": "https://twitter.com/mab_"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/makinacorpus/mkc-plone-post"
+  },
+  "bugs": {
+    "url": "https://github.com/makinacorpus/mkc-plone-post/issues"
+  },
   "dependencies": {
     "dotenv": "~8.2.0",
     "form-data": "~3.0.0",
