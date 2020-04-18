@@ -6,18 +6,30 @@ const path = require('path');
 const fs = require('fs');
 const fetch = require('node-fetch');
 const prompt = require('prompt');
+const yargs = require('yargs');
+
+yargs
+  .scriptName(require('../package.json').name)
+  .boolean('publish')
+  .alias('help', 'h')
+  .alias('publish', 'p');
+
+const {
+  argv: {
+    publish,
+    _: [fileName],
+  },
+} = yargs;
 
 const { render } = require('../lib/render-md.js');
 
-const doPublish = process.argv.includes('--publish');
-
 (async () => {
-  if (process.argv[2] && fs.existsSync(process.argv[2])) {
+  if (fileName && fs.existsSync(fileName)) {
     let frontmatter;
     let htmlSource;
 
-    const sourcetype = path.extname(process.argv[2]);
-    const sourcefile = fs.readFileSync(process.argv[2]).toString();
+    const sourcetype = path.extname(fileName);
+    const sourcefile = fs.readFileSync(fileName).toString();
 
     switch (sourcetype) {
       case '.html':
@@ -78,7 +90,7 @@ const doPublish = process.argv.includes('--publish');
 
       const postPath = frontmatter.url || result.postpath;
 
-      if (doPublish) {
+      if (publish) {
         const response = await fetch(`https://edit.makina-corpus.com${postPath}/update-content`, {
           method: 'POST',
           headers,

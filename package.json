@@ -30,7 +30,8 @@
     "remark-frontmatter": "~2.0.0",
     "remark-highlight.js": "~6.0.0",
     "remark-html": "~11.0.1",
-    "yaml": "~1.9.1"
+    "yaml": "~1.9.1",
+    "yargs": "~15.3.1"
   },
   "devDependencies": {
     "eslint": "~6.8.0",
