@@ -1,4 +1,14 @@
 
+1.0.0 / 2020-04-19
+==================
+
+  * Rename package to push-md
+  * Add basic command help
+  * Allow to choose file interactively
+  * Use inquirer instead of prompt
+  * Use yargs package to manage CLI arguments
+  * Add metadata to package.json
+
 0.2.0 / 2020-04-18
 ==================
 
