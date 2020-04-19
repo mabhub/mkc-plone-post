@@ -15,6 +15,7 @@ module.exports = {
     'implicit-arrow-linebreak':          [off],
     'prefer-template':                   [warn],
     'space-before-function-paren':       [error, always],
+    'no-console':                        [off],
 
     'key-spacing': [error, {
       singleLine: { mode: 'strict' },

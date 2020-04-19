@@ -39,13 +39,11 @@ inquirer
   try {
     await fs.access(filename);
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.error('Le fichier n\'existe pas ou est inaccessible.');
     process.exit(1);
   }
 
   if (!isMdPath(filename)) {
-    // eslint-disable-next-line no-console
     console.error('Type de fichier invalide');
     process.exit(1);
   }
@@ -54,7 +52,6 @@ inquirer
   const markdown = fileBuffer.toString();
 
   if (!markdown) {
-    // eslint-disable-next-line no-console
     console.error('Le fichier est vide.');
     process.exit(1);
   }
@@ -115,10 +112,8 @@ inquirer
       headers,
       body,
     });
-    // eslint-disable-next-line no-console
     console.log(await response.text());
   }
 
-  // eslint-disable-next-line no-console
   console.log('Terminé.');
 })();
