@@ -1,4 +1,12 @@
 
+1.1.0 / 2020-04-19
+==================
+
+  * Allow to define user from CLI option
+  * Add update notification feature
+  * Separate publish confirmation code from previous questions
+  * Prompt for publishing when no `--publish` given
+
 1.0.0 / 2020-04-19
 ==================
 

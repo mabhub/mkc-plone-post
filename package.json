@@ -1,6 +1,6 @@
 {
   "name": "push-md",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Pousse le contenu d'un article (existant) vers une API Plone",
   "bin": "bin/push-md.js",
   "scripts": {
