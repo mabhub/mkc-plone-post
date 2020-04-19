@@ -111,6 +111,13 @@ const {
       when: !frontmatter.url,
       validate: required,
     },
+    {
+      name: 'publish',
+      type: 'confirm',
+      message: 'Voulez-vous publier ce contenu ?',
+      default: false,
+      when: !publish,
+    },
   ]);
 
   const body = new FormData();
@@ -126,7 +133,7 @@ const {
 
   const postPath = frontmatter.url || result.postpath;
 
-  if (publish) {
+  if (publish || result.publish) {
     const response = await fetch(`https://edit.makina-corpus.com${postPath}/update-content`, {
       method: 'POST',
       headers,
@@ -134,8 +141,8 @@ const {
     });
     // eslint-disable-next-line no-console
     console.log(await response.text());
-  } else {
-    // eslint-disable-next-line no-console
-    console.log(htmlSource);
   }
+
+  // eslint-disable-next-line no-console
+  console.log('Terminé.');
 })();
