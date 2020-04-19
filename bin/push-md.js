@@ -15,10 +15,10 @@ const { render } = require('../lib/render-md.js');
 const notifier = updateNotifier({ pkg });
 notifier.notify();
 
+const isMdPath = pathname => path.extname(pathname).toLowerCase() === '.md';
+
 inquirer
   .registerPrompt('file-tree-selection', require('inquirer-file-tree-selection-prompt'));
-
-const ALLOWED_TYPES = ['.html', '.md'];
 
 (async () => {
   let fileName = file;
@@ -29,7 +29,7 @@ const ALLOWED_TYPES = ['.html', '.md'];
       type: 'file-tree-selection',
       root: process.cwd(),
       onlyShowValid: true,
-      validate: value => ALLOWED_TYPES.includes(path.extname(value).toLowerCase()),
+      validate: isMdPath,
     });
     fileName = response.file;
   }
@@ -38,39 +38,29 @@ const ALLOWED_TYPES = ['.html', '.md'];
     await fs.access(fileName);
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.error(e);
+    console.error('Le fichier n\'existe pas ou est inaccessible.');
     process.exit(1);
   }
 
-  const sourceFile = await fs.readFile(fileName);
-  const sourceType = path.extname(fileName);
-
-  if (!ALLOWED_TYPES.includes(sourceType.toLowerCase())) {
+  if (!isMdPath(fileName)) {
     // eslint-disable-next-line no-console
     console.error('Type de fichier invalide');
     process.exit(1);
   }
 
+  const sourceFile = await fs.readFile(fileName);
   const sourceText = sourceFile.toString();
+
   if (!sourceText) {
+    // eslint-disable-next-line no-console
+    console.error('Le fichier est vide.');
     process.exit(1);
   }
 
-  let frontmatter;
-  let htmlSource;
-
-  switch (sourceType) {
-    case '.html':
-      htmlSource = sourceText;
-      frontmatter = {};
-      break;
-    case '.md':
-    default: {
-      const rendered = await render(sourceText);
-      frontmatter = rendered.frontmatter;
-      htmlSource = rendered.html;
-    }
-  }
+  const {
+    frontmatter,
+    html: htmlSource,
+  } = await render(sourceText);
 
   const required = value => !!value || 'Ce champs ne peut être vide';
 
