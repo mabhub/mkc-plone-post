@@ -9,18 +9,23 @@ const fs = require('fs').promises;
 const fetch = require('node-fetch');
 const inquirer = require('inquirer');
 
-const { publish, username, file } = require('../lib/cli-args.js');
+const args = require('../lib/cli-args.js');
 const { render } = require('../lib/render-md.js');
 
 const isMdPath = pathname => path.extname(pathname).toLowerCase() === '.md';
+const required = value => !!value || 'Ce champs ne peut être vide';
+
+const shouldPromptUser = args.username === true
+  || !process.env.PASS
+  || !process.env.USER;
 
 inquirer
   .registerPrompt('file-tree-selection', require('inquirer-file-tree-selection-prompt'));
 
 (async () => {
-  let fileName = file;
+  let filename = args.file;
 
-  if (!fileName) {
+  if (!filename) {
     const response = await inquirer.prompt({
       name: 'file',
       type: 'file-tree-selection',
@@ -28,56 +33,53 @@ inquirer
       onlyShowValid: true,
       validate: isMdPath,
     });
-    fileName = response.file;
+    filename = response.file;
   }
 
   try {
-    await fs.access(fileName);
+    await fs.access(filename);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error('Le fichier n\'existe pas ou est inaccessible.');
     process.exit(1);
   }
 
-  if (!isMdPath(fileName)) {
+  if (!isMdPath(filename)) {
     // eslint-disable-next-line no-console
     console.error('Type de fichier invalide');
     process.exit(1);
   }
 
-  const sourceFile = await fs.readFile(fileName);
-  const sourceText = sourceFile.toString();
+  const fileBuffer = await fs.readFile(filename);
+  const markdown = fileBuffer.toString();
 
-  if (!sourceText) {
+  if (!markdown) {
     // eslint-disable-next-line no-console
     console.error('Le fichier est vide.');
     process.exit(1);
   }
 
-  const {
-    frontmatter,
-    html: htmlSource,
-  } = await render(sourceText);
+  const { frontmatter, html } = await render(markdown);
 
-  const required = value => !!value || 'Ce champs ne peut être vide';
-
-  const result = await inquirer.prompt([
+  const answers = await inquirer.prompt([
     {
-      name: 'tri',
+      name: 'username',
       message: 'Utilisateur',
-      default: username && username !== true ? username : process.env.USER,
-      when: username === true || !process.env.PASS || !process.env.USER,
+      default: args.username && args.username !== true
+        ? args.username
+        : process.env.USER,
+      when: shouldPromptUser,
       validate: required,
     },
     {
-      name: 'passwd',
+      name: 'pass',
       type: 'password',
       message: 'Mot de passe (non stocké)',
       when: !process.env.PASS,
       validate: required,
     },
     {
-      name: 'postpath',
+      name: 'url',
       message: 'Chemin complet du end-point de l\'article',
       default: frontmatter.url,
       when: !frontmatter.url,
@@ -88,27 +90,27 @@ inquirer
       type: 'confirm',
       message: 'Voulez-vous publier ce contenu ?',
       default: false,
-      when: !publish,
+      when: !args.publish,
     },
   ]);
 
   const body = new FormData();
-  body.append('text', htmlSource);
+  body.append('text', html);
 
-  const user = username && username !== true
-    ? username
-    : (result.tri || process.env.USER);
-  const pass = result.passwd || process.env.PASS;
+  const user = args.username && args.username !== true
+    ? args.username
+    : (answers.username || process.env.USER);
+  const pass = answers.pass || process.env.PASS;
 
   const auth = Buffer.from(`${user}:${pass}`).toString('base64');
   const headers = {
     Authorization: `Basic ${auth}`,
   };
 
-  const postPath = frontmatter.url || result.postpath;
+  const url = frontmatter.url || answers.url;
 
-  if (publish || result.publish) {
-    const response = await fetch(`https://edit.makina-corpus.com${postPath}/update-content`, {
+  if (args.publish || answers.publish) {
+    const response = await fetch(`https://edit.makina-corpus.com${url}/update-content`, {
       method: 'POST',
       headers,
       body,
