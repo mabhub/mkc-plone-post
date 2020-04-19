@@ -5,11 +5,11 @@ const FormData = require('form-data');
 const path = require('path');
 const fs = require('fs').promises;
 const fetch = require('node-fetch');
-const yargs = require('yargs');
 const inquirer = require('inquirer');
 const updateNotifier = require('update-notifier');
 
 const pkg = require('../package.json');
+const { publish, username, file } = require('../lib/cli-args.js');
 const { render } = require('../lib/render-md.js');
 
 const notifier = updateNotifier({ pkg });
@@ -18,35 +18,10 @@ notifier.notify();
 inquirer
   .registerPrompt('file-tree-selection', require('inquirer-file-tree-selection-prompt'));
 
-yargs
-  .scriptName(pkg.name)
-  .usage('$0 [--publish] [<fichier>]')
-  .alias('help', 'h')
-  .options({
-    publish: {
-      alias: 'p',
-      describe: 'Publie l\'article',
-      default: false,
-      type: 'boolean',
-    },
-    username: {
-      alias: 'u',
-      describe: 'Nom d\'utilisateur',
-    },
-  });
-
 const ALLOWED_TYPES = ['.html', '.md'];
 
-const {
-  argv: {
-    publish,
-    username,
-    _,
-  },
-} = yargs;
-
 (async () => {
-  let [fileName] = _;
+  let fileName = file;
 
   if (!fileName) {
     const response = await inquirer.prompt({
