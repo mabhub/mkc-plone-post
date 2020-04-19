@@ -103,7 +103,7 @@ const {
     {
       name: 'tri',
       message: 'Utilisateur',
-      default: process.env.USER,
+      default: username && username !== true ? username : process.env.USER,
       when: username === true || !process.env.PASS || !process.env.USER,
       validate: required,
     },
