@@ -1,4 +1,15 @@
 
+2.0.0 / 2020-04-20
+==================
+
+  * Adjust linting rules
+  * Change variable names
+  * Revert "Separate publish confirmation from previous questions"
+  * Extract update-notifier management to a separate module
+  * Drop HTML input management
+  * Extract CLI args management to a separate module
+  * Use CLI username value as default value when prompting username
+
 1.1.0 / 2020-04-19
 ==================
 
