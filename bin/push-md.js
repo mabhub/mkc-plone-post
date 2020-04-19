@@ -29,6 +29,10 @@ yargs
       default: false,
       type: 'boolean',
     },
+    username: {
+      alias: 'u',
+      describe: 'Nom d\'utilisateur',
+    },
   });
 
 const ALLOWED_TYPES = ['.html', '.md'];
@@ -36,6 +40,7 @@ const ALLOWED_TYPES = ['.html', '.md'];
 const {
   argv: {
     publish,
+    username,
     _,
   },
 } = yargs;
@@ -99,7 +104,7 @@ const {
       name: 'tri',
       message: 'Utilisateur',
       default: process.env.USER,
-      when: !process.env.PASS || !process.env.USER,
+      when: username === true || !process.env.PASS || !process.env.USER,
       validate: required,
     },
     {
@@ -129,7 +134,9 @@ const {
   const body = new FormData();
   body.append('text', htmlSource);
 
-  const user = result.tri || process.env.USER;
+  const user = username && username !== true
+    ? username
+    : (result.tri || process.env.USER);
   const pass = result.passwd || process.env.PASS;
 
   const auth = Buffer.from(`${user}:${pass}`).toString('base64');
