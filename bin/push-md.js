@@ -83,15 +83,14 @@ inquirer
       when: !frontmatter.url,
       validate: required,
     },
+    {
+      name: 'publish',
+      type: 'confirm',
+      message: 'Voulez-vous publier ce contenu ?',
+      default: false,
+      when: !publish,
+    },
   ]);
-
-  const { confirmPublish } = await inquirer.prompt({
-    name: 'publish',
-    type: 'confirm',
-    message: 'Voulez-vous publier ce contenu ?',
-    default: false,
-    when: !publish,
-  });
 
   const body = new FormData();
   body.append('text', htmlSource);
@@ -108,7 +107,7 @@ inquirer
 
   const postPath = frontmatter.url || result.postpath;
 
-  if (publish || confirmPublish) {
+  if (publish || result.publish) {
     const response = await fetch(`https://edit.makina-corpus.com${postPath}/update-content`, {
       method: 'POST',
       headers,
