@@ -7,14 +7,19 @@ const fs = require('fs').promises;
 const fetch = require('node-fetch');
 const yargs = require('yargs');
 const inquirer = require('inquirer');
+const updateNotifier = require('update-notifier');
 
+const pkg = require('../package.json');
 const { render } = require('../lib/render-md.js');
+
+const notifier = updateNotifier({ pkg });
+notifier.notify();
 
 inquirer
   .registerPrompt('file-tree-selection', require('inquirer-file-tree-selection-prompt'));
 
 yargs
-  .scriptName(require('../package.json').name)
+  .scriptName(pkg.name)
   .usage('$0 [--publish] [<fichier>]')
   .alias('help', 'h')
   .options({
