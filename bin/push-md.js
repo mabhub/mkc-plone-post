@@ -1,19 +1,16 @@
 #!/usr/bin/env node
 
 require('dotenv').config();
+require('../lib/update-notifier.js');
+
 const FormData = require('form-data');
 const path = require('path');
 const fs = require('fs').promises;
 const fetch = require('node-fetch');
 const inquirer = require('inquirer');
-const updateNotifier = require('update-notifier');
 
-const pkg = require('../package.json');
 const { publish, username, file } = require('../lib/cli-args.js');
 const { render } = require('../lib/render-md.js');
-
-const notifier = updateNotifier({ pkg });
-notifier.notify();
 
 const isMdPath = pathname => path.extname(pathname).toLowerCase() === '.md';
 
