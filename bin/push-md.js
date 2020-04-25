@@ -63,6 +63,10 @@ inquirer
     return;
   }
 
+  if (args.publish === false) {
+    return;
+  }
+
   const answers = await inquirer.prompt([
     {
       name: 'username',
