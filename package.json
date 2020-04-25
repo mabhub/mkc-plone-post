@@ -13,6 +13,7 @@
     "email": "benjamin.marguin@makina-corpus.com",
     "url": "https://twitter.com/mab_"
   },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/makinacorpus/push-md"
