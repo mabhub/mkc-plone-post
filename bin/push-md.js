@@ -48,7 +48,11 @@ inquirer
     process.exit(1);
   }
 
-  const { frontmatter, html } = await render(filename);
+  const { frontmatter, html, report } = await render(filename);
+
+  if (args.verbose > 0) {
+    console.log(report);
+  }
 
   if (args.outputHtml) {
     console.log(html);
