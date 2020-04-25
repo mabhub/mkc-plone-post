@@ -1,4 +1,17 @@
 
+2.2.0 / 2020-04-25
+==================
+
+  * Allow importing external file for code block content
+  * Allow to define `<Abbr />` in markdown source
+  * Display render report after html output
+  * Add a `--verbose` option to output report
+  * Add comments and do some code linting
+  * Use VFile for reading source data from disk
+  * Add vFile reporter to renderer output
+  * Do not prompt any question if `--no-publish`
+  * Use rehype-highlight instead of remark-highlight.js
+
 2.1.0 / 2020-04-25
 ==================
 
