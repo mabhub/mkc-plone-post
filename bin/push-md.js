@@ -50,13 +50,13 @@ inquirer
 
   const { frontmatter, html, report } = await render(filename);
 
-  if (args.verbose > 0) {
-    console.log(report);
-  }
-
   if (args.outputHtml) {
     console.log(html);
-    return;
+    args.publish = false;
+  }
+
+  if (args.verbose > 0) {
+    console.log(report);
   }
 
   if (args.publish === false) {
