@@ -58,6 +58,11 @@ inquirer
 
   const { frontmatter, html } = await render(markdown);
 
+  if (args.outputHtml) {
+    console.log(html);
+    return;
+  }
+
   const answers = await inquirer.prompt([
     {
       name: 'username',
@@ -87,7 +92,7 @@ inquirer
       type: 'confirm',
       message: 'Voulez-vous publier ce contenu ?',
       default: false,
-      when: !args.publish,
+      when: typeof args.publish === 'undefined' && !args.outputHtml,
     },
   ]);
 
@@ -114,6 +119,4 @@ inquirer
     });
     console.log(await response.text());
   }
-
-  console.log('Terminé.');
 })();
