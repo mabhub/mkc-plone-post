@@ -26,6 +26,7 @@
     "inquirer": "~7.1.0",
     "inquirer-file-tree-selection-prompt": "~1.0.5",
     "node-fetch": "~2.6.0",
+    "rehype-format": "~3.0.1",
     "rehype-raw": "~4.0.2",
     "rehype-stringify": "~7.0.0",
     "remark-extract-frontmatter": "~2.0.2",
