@@ -48,15 +48,7 @@ inquirer
     process.exit(1);
   }
 
-  const fileBuffer = await fs.readFile(filename);
-  const markdown = fileBuffer.toString();
-
-  if (!markdown) {
-    console.error('Le fichier est vide.');
-    process.exit(1);
-  }
-
-  const { frontmatter, html } = await render(markdown);
+  const { frontmatter, html } = await render(filename);
 
   if (args.outputHtml) {
     console.log(html);
