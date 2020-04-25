@@ -34,6 +34,7 @@
     "rehype-slug": "~3.0.0",
     "rehype-stringify": "~7.0.0",
     "remark-abbr": "~1.4.0",
+    "remark-code-import": "~0.2.0",
     "remark-extract-frontmatter": "~2.0.2",
     "remark-footnotes": "~1.0.0",
     "remark-frontmatter": "~2.0.0",
