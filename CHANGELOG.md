@@ -1,4 +1,15 @@
 
+2.1.0 / 2020-04-25
+==================
+
+  * Add anchor link for every headings
+  * Add accessible description to emojis
+  * Format output HTML
+  * Allow using HTML inside source markdown
+  * Use detailed unified-remark-rehype processing for md to html
+  * Add ability to only output generated html
+  * Improve params filtering from cli args
+
 2.0.1 / 2020-04-21
 ==================
 
