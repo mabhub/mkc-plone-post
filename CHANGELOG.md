@@ -1,4 +1,10 @@
 
+2.2.1 / 2020-04-26
+==================
+
+  * Create basic README file
+  * Add source code license
+
 2.2.0 / 2020-04-25
 ==================
 
